@@ -1,10 +1,10 @@
-OBJS = logger.o main.o
-SOURCE = logger.c main.c
-HEADER = colors.h logger.h
+OBJS = logger.o main.o redis.o
+SOURCE = logger.c main.c redis.c
+HEADER = colors.h logger.h redis.h
 OUT	= run.out
 CC = gcc
 FLAGS = -g -c -Wall
-LFLAGS = 
+LFLAGS = -lhiredis
 
 all: $(OBJS)
 	@echo "Finishing..."
@@ -14,6 +14,10 @@ all: $(OBJS)
 	@echo "Job done."
 
 logger.o: logger.c
+	@echo "Building $<..."
+	$(CC) $(FLAGS) $<
+
+redis.o: redis.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 

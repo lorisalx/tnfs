@@ -1,4 +1,5 @@
 #include "logger.h"
+#include "hiredis/hiredis.h"
 
 int main(int argc, char **argv) {
     log_info("Test info");
