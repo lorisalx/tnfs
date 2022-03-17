@@ -46,22 +46,16 @@ void dispose()
 
 void set_redis_command(char* key, char* value)
 {
-    char* log = (char*)malloc(50*sizeof(char));
-    sprintf(log, "New redis set command called for tuple (%s, %s)", key, value);
-    log_info(log);
+    log_formated_info( "New redis set command called for tuple (%s, %s).", key, value);
     redisReply *reply = redisCommand(client->context,"SET %s %s", key, value);
-    free(log);
     freeReplyObject(reply);
 }
 
 char* get_redis_command(char* key)
 {
-    char* log = (char*)malloc(50*sizeof(char));
-    sprintf(log, "New redis get command called for key (%s, ?)", key);
-    log_info(log);
+    log_formated_info("New redis get command called for key (%s, ?).", key);
     redisReply *reply = redisCommand(client->context,"GET %s", key);
     char* res = reply->str;
     freeReplyObject(reply);
-    free(log);
     return res;
 }
