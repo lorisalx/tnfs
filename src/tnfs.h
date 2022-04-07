@@ -1,11 +1,10 @@
 #include <stddef.h>
 #ifndef TNFS_H
 #define TNFS_H
-/**
- * @brief 100 mb
- */
-#define MAX_FILE_LENGTH 100000000
 
-void add_tnfs_file(char* filename);
-void generate_cid_from_file_content(char* input, size_t input_length, char* cid);
-#endif //TNFS_H
+#define MAX_FILE_LENGTH 102400000 // Maximum file size : 102.4mb
+#define BLOCK_LIMIT 256000 // Maximum size of 1 block for the chunker : 256kb
+#define MAX_LINKS 400
+
+void add_tnfs_file(char* filename); // To add a file into tnfs system
+#endif
