@@ -16,7 +16,7 @@ typedef struct pn {
     int type;
     char filename[256];
     int nbBlocks;
-    char* links[MAX_LINKS];
+    char links[MAX_LINKS][CID_LENGTH + 1];
 } ParentNode;
 
 #endif //DAG_H

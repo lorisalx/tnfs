@@ -71,7 +71,7 @@ static unsigned char encode_char(unsigned char c)
 }
 
 /**
- * Decode given character into a 5 bits value.
+ * Decode given character into a 5 bits value. 
  * Returns -1 iff the argument given was an invalid base32 character
  * or a padding character.
  */

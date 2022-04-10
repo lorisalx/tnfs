@@ -30,18 +30,17 @@ void add_tnfs_file(char* filename)
     // Get file data
     char* output = (char *) malloc(buffer->st_size * sizeof(char));
     size_t output_length = get_file_content(filename, output);
-
     if(output_length == 0)
     {
         log_error("An error occured while reading the file.");
     }
 
-    // Create the chunks from the file
+    // Create blocks from the file
     int nbBlocks = get_number_of_blocks(output_length);
     char** linksTab = create_chunks(output, output_length, nbBlocks);
 
     // Generate the parent bloc and get the CID
-    char* cid = (char*)malloc(sizeof(char) * CID_LENGTH);
+    char* cid = (char *) calloc(1, sizeof(char) * CID_LENGTH);
     create_parent(filename, linksTab, nbBlocks, cid);
     log_formated_info("New file %s added to tnfs with CID : %s", filename, cid);
 

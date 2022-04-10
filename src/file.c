@@ -32,14 +32,14 @@ int get_file_stats(char* filename, struct stat *buffer)
 
 void generate_cid_from_file(char* filename, char* cid) 
 {
-    // Récupération du fichier
+    // Get the file content
     struct stat *buffer = malloc(sizeof(struct stat));
     get_file_stats(filename, buffer);
 
     char* output = (char *) malloc(buffer->st_size * sizeof(char));
     size_t output_length = get_file_content(filename, output);
 
-    // Génération du CID
+    // CID Generation
     generate_cid_from_file_content(output, output_length, cid);
 
     free(buffer);
@@ -56,15 +56,15 @@ void generate_cid_from_file_content(char* input, size_t input_length, char* cid)
 
     char* plain_hash = (char *)malloc(sizeof(char) * PLAIN_HASH_LENGTH);
     sprintf(plain_hash, "%s%s", hash_headers, hash_string);
-    log_formated_debug("HashString: %s", hash_string);
-    log_formated_debug("PlainHash: %s", plain_hash);
+    //log_formated_debug("HashString: %s", hash_string);
+    //log_formated_debug("PlainHash: %s", plain_hash);
 
-    char* encoded = (char *)malloc(sizeof(char) * ENCODED_HASH_LENGTH);
+    char* encoded = (char *) malloc(sizeof(char) * ENCODED_HASH_LENGTH);
     base32_encode((const unsigned char*)plain_hash, PLAIN_HASH_LENGTH, (unsigned char*)encoded);
-    log_formated_debug("Encoded: %s", encoded);
-
+    //log_formated_debug("Encoded: %s", encoded);
+    encoded[113] = '\0';
     sprintf(cid, "b%s", encoded);
-    log_formated_debug("Cid: %s", cid);
+    //log_formated_debug("Cid: %s", cid);
 
     free(encoded);
     free(hash);
