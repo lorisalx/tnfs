@@ -2,6 +2,9 @@
 #include "tnfs.h"
 #include "logger.h"
 #include "dag.h"
+#include "redis.h"
+#include "string.h"
+
 #include <stdio.h>
 
 void add_tnfs_file(char* filename)
@@ -33,6 +36,7 @@ void add_tnfs_file(char* filename)
     if(output_length == 0)
     {
         log_error("An error occured while reading the file.");
+        return;
     }
 
     // Create blocks from the file
@@ -48,4 +52,23 @@ void add_tnfs_file(char* filename)
     free(buffer);
     free(linksTab);
     free(cid);
+}
+
+void tnfs_get_infos(char* cid) {
+    DAGNode* node = calloc(1, sizeof(DAGNode));
+    
+    if(read_block(cid, node) == -1) {
+        exit(EXIT_FAILURE);
+    }
+
+    // Print infos
+    printf("- Block type : %i\n", node->type);
+    printf("- Filename : %s\n", node->filename);
+    printf("- Nb links : %i\n", node->nbLinks);
+
+    free(node);
+}
+
+void get_tnfs_file(char* cid) {
+    // Récupération du block parent
 }

@@ -1,18 +1,23 @@
-OBJS = logger.o main.o redis.o sha-256.o base-32.o file.o tnfs.o
-SOURCE = logger.c main.c redis.c sha-256.c base-32.c file.c tnfs.c
-HEADER = colors.h logger.h redis.h sha-256.h base-32.h file.h tnfs.h
+OBJS = logger.o main.o sha-256.o redis.o base-32.o file.o tnfs.o dag.o
+SOURCE = logger.c main.c sha-256.c redis.c base-32.c file.c tnfs.c dag.c
+HEADER = colors.h logger.h sha-256.h redis.h  base-32.h file.h tnfs.h dag.h
 OUT	= tnfs
 CC = gcc
-FLAGS = -g -c -Wall
+FLAGS = -g -c -Wall 
 LFLAGS = -lhiredis
 
 all: $(OBJS)
 	@echo "Finishing..."
 	$(CC) -g $(OBJS) -o $(OUT) $(LFLAGS)
 	mv *.o bin/
+	mv $(OUT) ../exec/
 	@echo "Job done."
 
 tnfs.o: tnfs.c
+	@echo "Building $<..."
+	$(CC) $(FLAGS) $<
+
+dag.o: dag.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 
@@ -28,11 +33,11 @@ base-32.o: base-32.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 
-logger.o: logger.c
+redis.o: redis.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 
-redis.o: redis.c
+logger.o: logger.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 
@@ -41,4 +46,4 @@ main.o: main.c
 	$(CC) $(FLAGS) $<
 
 clean:
-	rm -f bin/* exec/*
+	rm -f bin/*
