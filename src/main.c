@@ -14,6 +14,7 @@ void print_usage() {
     log_error("   - get <CID> : get a file from TNFS");
     log_error("   - infos <CID> : get infos about a CID");
     log_error("   - clean : clean local data");
+    exit(EXIT_FAILURE);
 }
 
 int main(int argc, char *argv[])
@@ -21,42 +22,34 @@ int main(int argc, char *argv[])
     // Init redis
     init_redis();
 
-    if(argc < 2) {
-        print_usage();
-        return EXIT_FAILURE;
-    }
+    // Need minimum 2 arguments
+    neededArgument(argc, 2);
 
+    // Read arguments
     if(strcmp("add", argv[1]) == 0) {
-        if(argc < 3)   {
-            print_usage();
-            return EXIT_FAILURE;
-        }
+        neededArgument(argc, 3);
         add_tnfs_file(argv[2]);
     } else if (strcmp("get", argv[1]) == 0) {
-        if(argc < 3)   {
-            print_usage();
-            return EXIT_FAILURE;
-        }
-
+        neededArgument(argc, 3);
         get_tnfs_file(argv[2]);
         log_info("File downloaded !");
     } else if (strcmp("infos", argv[1]) == 0) {
-        if(argc < 3)   {
-            print_usage();
-            return EXIT_FAILURE;
-        }
-
+        neededArgument(argc, 3);
         tnfs_get_infos(argv[2]);
     } else if (strcmp("clean", argv[1]) == 0) {
         tnfs_clean_data();
         log_info("Data cleaned !");
     } else {
         print_usage();
-        return EXIT_FAILURE;
     }
 
     // Deconnect redis
     dispose();
 
     return EXIT_SUCCESS;
+}
+
+void neededArgument(int argc, int needed) {
+    if(argc < needed)
+        print_usage();
 }
