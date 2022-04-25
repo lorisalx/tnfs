@@ -10,5 +10,6 @@
 void add_tnfs_file(char* filename); // To add a file into tnfs system
 void tnfs_get_infos(char* cid); // Get infos about a CID
 void get_tnfs_file(char* cid); // To download a file
+void tnfs_clean_data(); // To clean all stored data
 
 #endif

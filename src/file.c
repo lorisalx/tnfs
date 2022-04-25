@@ -11,8 +11,8 @@ size_t get_file_content(char* filename, char* output)
     FILE *f;
 
     if ((f = fopen(filename, "rb")) == NULL){
-        log_error("An error occured while loading a file.");
-        return 0;
+        log_error("An error occured while loading the file.");
+        exit(EXIT_FAILURE);
     }
     
     fseek(f, 0, SEEK_END);
@@ -25,17 +25,22 @@ size_t get_file_content(char* filename, char* output)
     return fsize;
 }
 
-int get_file_stats(char* filename, struct stat *buffer)
+void get_file_stats(char* filename, struct stat *buffer)
 {
-    return stat(filename, buffer);
+    if(stat(filename, buffer) != 0)
+    {
+        log_formated_error("The given file (%s) is not found.", filename);
+        exit(EXIT_FAILURE);
+    }
 }
 
 void generate_cid_from_file(char* filename, char* cid) 
 {
-    // Get the file content
+    // Get the file stats
     struct stat *buffer = malloc(sizeof(struct stat));
     get_file_stats(filename, buffer);
 
+    // Get the file content
     char* output = (char *) malloc(buffer->st_size * sizeof(char));
     size_t output_length = get_file_content(filename, output);
 
@@ -70,4 +75,11 @@ void generate_cid_from_file_content(char* input, size_t input_length, char* cid)
     free(hash);
     free(hash_string);
     free(plain_hash);
+}
+
+void generate_block_name(char* content, int content_size, char* block_name) {
+    uint8_t *hash = (uint8_t *) malloc(sizeof(uint8_t) * SIZE_OF_SHA_256_HASH);
+    calc_sha_256(hash, content, content_size);
+    hash_to_string(hash, block_name);
+    free(hash);
 }

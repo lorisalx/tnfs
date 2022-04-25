@@ -15,7 +15,7 @@ void init_redis()
         log_error(c->errstr);
     }
     client.context = c;
-    log_info("New redis context successfully instantiated.");
+    //log_info("New redis context successfully instantiated.");
 }
 
 void dispose()
@@ -25,14 +25,14 @@ void dispose()
 
 void set_redis_command(char* key, char* value)
 {
-    log_formated_info( "New redis SET command called for tuple (%s, %s).", key, value);
+    //log_formated_info( "New redis SET command called for tuple (%s, %s).", key, value);
     redisReply *reply = redisCommand(client.context,"SET %s %s", key, value);
     freeReplyObject(reply);
 }
 
 void del_redis_command(char* key)
 {
-    log_formated_info( "New redis DEL command called for key (%s).", key);
+    //log_formated_info( "New redis DEL command called for key (%s).", key);
     redisReply *reply = redisCommand(client.context,"DEL %s", key);
     freeReplyObject(reply);
 }
