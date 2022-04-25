@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "stdlib.h": "c",
-        "file.h": "c",
-        "tnfs.h": "c"
-    }
-}
