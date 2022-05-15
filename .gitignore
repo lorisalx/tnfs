@@ -10,3 +10,10 @@
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# TNFS local storage
+exec/*
+bin
+hiredis
+!exec/tnfs
+!exec/tnfs-server
