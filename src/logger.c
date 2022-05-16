@@ -57,7 +57,7 @@ void log_msg(LogLevel level, char* format, va_list *args){
     printf("%s", C_DEFAULT);
     if(args == NULL)
     {
-        printf(format);
+        printf("%s", format);
     }
     else
     {
@@ -67,7 +67,7 @@ void log_msg(LogLevel level, char* format, va_list *args){
         va_end(argsCopy);
         char buffer[len + 1];
         vsnprintf(buffer, sizeof(buffer), format, *args);
-        printf(buffer);
+        printf("%s", buffer);
     }
     printf("\n");
     fflush(stdout);

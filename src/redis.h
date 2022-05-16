@@ -1,7 +1,12 @@
-#include "hiredis/hiredis.h"
+#include "lib/hiredis/hiredis.h"
 
 #ifndef REDIS_H
 #define REDIS_H
+
+typedef enum { 
+    BLOCK, 
+    PEER
+} KEY_TYPE;
 
 typedef struct redisConf {
     const char ip[15];
@@ -15,11 +20,12 @@ typedef struct redisCli {
     redisContext* context;
 } redisClient;
 
-void set_redis_command(char* key, char* value);
-void get_redis_command(char* key, char* result);
-void del_redis_command(char* key);
-void init_redis();
+void set_redis_command(KEY_TYPE type, char* key, char* value);
+void get_redis_command(KEY_TYPE type, char* key, char* result);
+void del_redis_command(KEY_TYPE type, char* key);
+void changeDatabase(KEY_TYPE type);
+int init_redis();
 void dispose();
-void clean_registry();
+void clean_registry(KEY_TYPE type);
 
 #endif //REDIS_H

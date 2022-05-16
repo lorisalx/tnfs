@@ -6,6 +6,7 @@
 #define BLOCK_LIMIT 256000 // Maximum size of 1 block for the chunker : 256kb
 #define MAX_LINKS MAX_FILE_LENGTH/BLOCK_LIMIT
 #define BLOCK_PATH "./blocks/"
+#define PORT_SERVER 5000
 
 void add_tnfs_file(char* filename); // To add a file into tnfs system
 void tnfs_get_infos(char* cid); // Get infos about a CID

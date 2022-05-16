@@ -1,7 +1,5 @@
-OBJS = logger.o tnfs-server.o sha-256.o redis.o base-32.o file.o tnfs.o dag.o network.o
-SOURCE = logger.c tnfs-server.c sha-256.c redis.c base-32.c file.c tnfs.c dag.c network.c
-HEADER = colors.h logger.h sha-256.h redis.h  base-32.h file.h tnfs.h dag.h network.h
-OUT	= tnfs-server
+OBJS = logger.o main.o sha-256.o redis.o base-32.o file.o tnfs.o dag.o network.o
+OUT	= tnfs
 CC = gcc
 FLAGS = -g -c -Wall 
 LFLAGS = -lhiredis
@@ -9,45 +7,45 @@ LFLAGS = -lhiredis
 all: $(OBJS)
 	@echo "Finishing..."
 	$(CC) -g $(OBJS) -o $(OUT) $(LFLAGS)
-	mv *.o bin/
-	mv $(OUT) ../exec/
+	mv *.o src/bin/
+	mv $(OUT) ./exec/
 	@echo "Job done."
 
-tnfs.o: tnfs.c
+tnfs.o: ./src/tnfs.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 
-dag.o: dag.c
+dag.o: ./src/dag.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 
-file.o: file.c
+file.o: ./src/file.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 
-sha-256.o: sha-256.c
+sha-256.o: ./src/lib/crypt/sha-256.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 
-base-32.o: base-32.c
+base-32.o: ./src/lib/crypt/base-32.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 
-redis.o: redis.c
+redis.o: ./src/redis.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 
-logger.o: logger.c
+logger.o: ./src/logger.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 
-network.o: network.c
+network.o: ./src/network.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 
-tnfs-server.o: tnfs-server.c
+main.o: ./src/main.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 
 clean:
-	rm -f bin/*
+	rm -f src/bin/*

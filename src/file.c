@@ -1,7 +1,7 @@
 #include "file.h"
 #include "logger.h"
-#include "sha-256.h"
-#include "base-32.h"
+#include "lib/crypt/sha-256.h"
+#include "lib/crypt/base-32.h"
 
 #include <stdio.h>
 #include <stdlib.h>

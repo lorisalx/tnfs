@@ -9,7 +9,7 @@
 #include "logger.h"
 #include "dag.h"
 #include "redis.h"
-#include "sha-256.h"
+#include "lib/crypt/sha-256.h"
 
 char** create_chunks(char* data, size_t data_size, int nb_blocks)
 {
@@ -61,7 +61,7 @@ char** create_chunks(char* data, size_t data_size, int nb_blocks)
         linksTab[i] = cid;
 
         // Adding the tuple (cid=>block_name) into redis
-        set_redis_command(cid, blockname);
+        set_redis_command(BLOCK, cid, blockname);
 
         free(currentBloc);
         free(node);
@@ -110,7 +110,7 @@ void create_parent(char* filename, char** links, int nb_links, char* cid, size_t
     generate_cid_from_file(filedir, cid);
 
     // Adding the tuple (cid=>block_name) into redis
-    set_redis_command(cid, blockname);
+    set_redis_command(BLOCK, cid, blockname);
 
     free(node);
     free(result);
@@ -129,29 +129,35 @@ int verify_block(char* filename, char* cid) {
 
 void read_block(char* cid, DAGNode* node) {  
     char block_name[NAME_MAX];
-    get_redis_command(cid, block_name);
+    get_redis_command(BLOCK, cid, block_name);
 
     if(strcmp(block_name,"null") == 0) {
         log_error("You don't have the block.");
-        // Download du block ici
+        // Normalement on appel une méthode du network qui télécharge le block, fait la vérification, l'ajoute dans redis etc... et retourne le nom du block
         exit(EXIT_FAILURE);
     }
 
     char buf[PATH_MAX];
     snprintf(buf, sizeof(buf), "%s%s", BLOCK_PATH, block_name);
 
-    // Verify block
-    if(verify_block(buf, cid) == -1) {
-        log_error("The block doesn't correspond to the CID.");
-        exit(EXIT_FAILURE);
-    }
-
     // Read block
     FILE *f;
-
     if ((f = fopen(buf, "rb")) == NULL){
-        log_error("An error occured while loading the block.");
-        exit(EXIT_FAILURE);
+        // Impossible d'ouvrir le block (il n'existe peut être pas), on le supprime de redis et on recommence
+        del_redis_command(BLOCK, cid);
+        read_block(cid, node);
+        return;
+    }
+
+    // Verify block
+    if(verify_block(buf, cid) == -1) {
+        // Le block correspond pas au CID, on le retire alors de REDIS et on supprime le fichier.
+        // On relance ensuite le read_block afin de le télécharger
+
+        del_redis_command(BLOCK, cid);
+        remove(buf);
+        read_block(cid, node);
+        return;
     }
 
     fread(node, sizeof(DAGNode), 1, f);

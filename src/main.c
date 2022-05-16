@@ -2,6 +2,7 @@
 #include "tnfs.h"
 #include "redis.h"
 
+#include <string.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,10 +18,17 @@ void print_usage() {
     exit(EXIT_FAILURE);
 }
 
+void neededArgument(int argc, int needed) {
+    if(argc < needed)
+        print_usage();
+}
+
 int main(int argc, char *argv[])
 {
     // Init redis
-    init_redis();
+    if(init_redis() == -1) 
+        return EXIT_FAILURE;
+    
 
     // Need minimum 2 arguments
     neededArgument(argc, 2);
@@ -50,9 +58,4 @@ int main(int argc, char *argv[])
     dispose();
 
     return EXIT_SUCCESS;
-}
-
-void neededArgument(int argc, int needed) {
-    if(argc < needed)
-        print_usage();
 }

@@ -1,0 +1,27 @@
+OBJS = logger.o tnfs-server.o network.o
+OUT	= tnfs-server
+CC = gcc
+FLAGS = -g -c -Wall 
+LFLAGS = -lhiredis
+
+all: $(OBJS)
+	@echo "Finishing..."
+	$(CC) -g $(OBJS) -o $(OUT) $(LFLAGS)
+	mv *.o src/bin/
+	mv $(OUT) ./exec/
+	@echo "Job done."
+
+logger.o: ./src/logger.c
+	@echo "Building $<..."
+	$(CC) $(FLAGS) $<
+
+network.o: ./src/network.c
+	@echo "Building $<..."
+	$(CC) $(FLAGS) $<
+
+tnfs-server.o: ./src/tnfs-server.c
+	@echo "Building $<..."
+	$(CC) $(FLAGS) $<
+
+clean:
+	rm -f src/bin/*

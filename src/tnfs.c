@@ -4,6 +4,7 @@
 #include "dag.h"
 #include "redis.h"
 #include "string.h"
+
 #include "network.h"
 #include "peer.h"
 
@@ -93,9 +94,7 @@ void get_tnfs_file(char* cid) {
 }
 
 void tnfs_clean_data() {
-    // Clean registery
-    clean_registry();
-
+    clean_registry(BLOCK);
     // To do : clean blocks folder
 }
 
