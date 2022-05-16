@@ -10,6 +10,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "logger.h"
+#include "network.h"
+
 int max(int x, int y)
 {
 	if (x > y)
@@ -31,7 +34,8 @@ int main()
 	void sig_chld(int);
 
 	/* Opening TCP socket */
-	if(tcpfd = socket(AF_INET, SOCK_STREAM, 0) < 0) {
+    tcpfd = socket(AF_INET, SOCK_STREAM, 0);
+	if(tcpfd < 0) {
         log_error("Creation of listening TCP socket failed.");
         exit(EXIT_FAILURE);
 	}
@@ -46,9 +50,11 @@ int main()
         exit(EXIT_FAILURE);
 	}
 	listen(tcpfd, 10);
+    log_formated_error("Connected on port %d",PORT);
 
 	/* Opening UDP socket */
-	if(udpfd = socket(AF_INET, SOCK_DGRAM, 0) < 0 ) {
+    udpfd = socket(AF_INET, SOCK_DGRAM, 0);
+	if(udpfd < 0 ) {
      	log_error("Creation of listening UDP socket failed.");
     	exit(EXIT_FAILURE);
 	}
@@ -58,18 +64,18 @@ int main()
     	exit(EXIT_FAILURE);
 	}
 
-	// clear the descriptor set
+	/* Clearing the descriptor set */
 	FD_ZERO(&rset);
 
-	// get maxfd
+
 	maxfdp1 = max(tcpfd, udpfd) + 1;
 	for (;;) {
 
-		// set listenfd and udpfd in readset
+		/* Set both fd in readset */
 		FD_SET(tcpfd, &rset);
 		FD_SET(udpfd, &rset);
 
-		// select the ready descriptor
+		/* Select the ready descriptor */
 		nready = select(maxfdp1, &rset, NULL, NULL, NULL);
 
 		// if tcp socket is readable then handle
@@ -79,11 +85,7 @@ int main()
 			connfd = accept(tcpfd, (struct sockaddr*)&cliaddr, &len);
 			if ((childpid = fork()) == 0) {
 				close(tcpfd);
-				bzero(buffer, sizeof(buffer));
-				printf("Message From TCP client: ");
-				read(connfd, buffer, sizeof(buffer));
-				puts(buffer);
-				write(connfd, (const char*)message, sizeof(buffer));
+                write_file(connfd);
 				close(connfd);
 				exit(0);
 			}

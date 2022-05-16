@@ -4,6 +4,8 @@
 #include "dag.h"
 #include "redis.h"
 #include "string.h"
+#include "network.h"
+#include "peer.h"
 
 #include <stdio.h>
 
@@ -95,4 +97,11 @@ void tnfs_clean_data() {
     clean_registry();
 
     // To do : clean blocks folder
+}
+
+void tnfs_test() {
+    Peer* p = calloc(1,sizeof(Peer));
+    p->ip = "127.0.0.1";
+    p->port = 5000;
+    tcp_send_file(p,"caca");
 }

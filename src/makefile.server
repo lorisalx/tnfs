@@ -1,6 +1,6 @@
-OBJS = logger.o tnfs-server.o sha-256.o redis.o base-32.o file.o tnfs.o dag.o rpc.o
-SOURCE = logger.c tnfs-server.c sha-256.c redis.c base-32.c file.c tnfs.c dag.c rpc.c
-HEADER = colors.h logger.h sha-256.h redis.h  base-32.h file.h tnfs.h dag.h rpc.h
+OBJS = logger.o tnfs-server.o sha-256.o redis.o base-32.o file.o tnfs.o dag.o network.o
+SOURCE = logger.c tnfs-server.c sha-256.c redis.c base-32.c file.c tnfs.c dag.c network.c
+HEADER = colors.h logger.h sha-256.h redis.h  base-32.h file.h tnfs.h dag.h network.h
 OUT	= tnfs-server
 CC = gcc
 FLAGS = -g -c -Wall 
@@ -41,7 +41,7 @@ logger.o: logger.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 
-rpc.o: rpc.c
+network.o: network.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 

@@ -39,6 +39,9 @@ int main(int argc, char *argv[])
     } else if (strcmp("clean", argv[1]) == 0) {
         tnfs_clean_data();
         log_info("Data cleaned !");
+    } else if (strcmp("test", argv[1]) == 0) {
+        tnfs_test();
+        log_info("File transfer !");
     } else {
         print_usage();
     }
