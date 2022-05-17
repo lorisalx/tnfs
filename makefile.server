@@ -1,4 +1,4 @@
-OBJS = logger.o tnfs-server.o network.o
+OBJS = logger.o tnfs-server.o network.o peer.o redis.o
 OUT	= tnfs-server
 CC = gcc
 FLAGS = -g -c -Wall 
@@ -16,6 +16,14 @@ logger.o: ./src/logger.c
 	$(CC) $(FLAGS) $<
 
 network.o: ./src/network.c
+	@echo "Building $<..."
+	$(CC) $(FLAGS) $<
+
+peer.o: ./src/peer.c
+	@echo "Building $<..."
+	$(CC) $(FLAGS) $<
+
+redis.o: ./src/redis.c
 	@echo "Building $<..."
 	$(CC) $(FLAGS) $<
 

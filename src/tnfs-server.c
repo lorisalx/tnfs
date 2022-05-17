@@ -9,9 +9,11 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "logger.h"
 #include "network.h"
+#include "redis.h"
 
 int max(int x, int y)
 {
@@ -23,7 +25,7 @@ int max(int x, int y)
 int main()
 {
 	int tcpfd, connfd, udpfd, nready, maxfdp1;
-	char buffer[MAXLINE];
+	char buffer[30];
 	pid_t childpid;
 	fd_set rset;
 	ssize_t n;
@@ -85,7 +87,32 @@ int main()
 			connfd = accept(tcpfd, (struct sockaddr*)&cliaddr, &len);
 			if ((childpid = fork()) == 0) {
 				close(tcpfd);
-                write_file(connfd,"filerecieve");
+				recv(connfd, buffer, sizeof(buffer), 0);
+				log_formated_info("Communication type : %s",buffer);
+				if (strcmp(buffer,"LOOKING_FOR_FILE") == 0) {
+					char blockname[500];
+					char res[500];
+					recv(connfd, blockname, MAXLINE, 0);
+					log_formated_info("Looking for block : %s",blockname);
+					get_redis_command(BLOCK,blockname,res);
+					if(strcmp(res,"null") == 0) {
+						log_error("Block not found.");
+					}
+					else {
+						FILE *fp;
+						fp = fopen(res, "rb");
+						if (fp == NULL)
+						{
+							log_error("Error while reading file");
+							exit(EXIT_FAILURE);
+						}
+						send_file(fp,connfd);
+						log_info("File data sent successfully");
+					}
+				}
+				else if (strcmp(buffer,"RECIEVE_FILE") == 0) {
+					write_file(connfd,"filerecieve");
+				}
 				close(connfd);
 				exit(0);
 			}

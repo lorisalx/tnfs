@@ -9,6 +9,7 @@
 #include "logger.h"
 #include "dag.h"
 #include "redis.h"
+#include "network.h"
 #include "lib/crypt/sha-256.h"
 
 char** create_chunks(char* data, size_t data_size, int nb_blocks)
@@ -132,9 +133,13 @@ void read_block(char* cid, DAGNode* node) {
     get_redis_command(BLOCK, cid, block_name);
 
     if(strcmp(block_name,"null") == 0) {
-        log_error("You don't have the block.");
-        // Normalement on appel une méthode du network qui télécharge le block, fait la vérification, l'ajoute dans redis etc... et retourne le nom du block
-        exit(EXIT_FAILURE);
+        log_error("You don't have the block on your local storage.");
+        look_for_block(cid);
+        get_redis_command(BLOCK, cid, block_name);
+        if(strcmp(block_name,"null") == 0) {
+            log_error("Block not found on the network.");
+            exit(EXIT_FAILURE);
+        }
     }
 
     char buf[PATH_MAX];

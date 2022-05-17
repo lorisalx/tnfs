@@ -6,10 +6,10 @@
 #include "network.h"
 #include "logger.h"
 #include "peer.h"
+#include "redis.h"
 
 void send_file(FILE *fp, int sockfd)
 {
-    int n;
     char data[SIZE] = {0};
 
     while (fgets(data, SIZE, fp) != NULL)
@@ -91,4 +91,55 @@ void tcp_send_file(Peer *p, char *filename)
 
     log_info("Closing the connection");
     close(sockfd);
+}
+
+void look_for_block(char* cid) {
+    // Pour chaque pair dans la table de routage
+    Peer* ptab[MAX_REDIS_KEYS];
+    *ptab = calloc(MAX_REDIS_KEYS,sizeof(Peer));
+    get_all_peers(ptab);
+    int i = 0;
+    while(ptab[i] != NULL) {
+        // Voir si on a le fichier
+        int res = 1;
+        if(res == 1) {
+            log_formated_info("Block %s has been found", cid);
+            break;
+        }
+    }
+}
+
+int open_tcp_socket() {
+    struct sockaddr_in server_addr;
+
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0)
+    {
+        log_error("Error creating socket");
+        exit(EXIT_FAILURE);
+    }
+    log_info("Server socket created successfully");
+    int e;
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(5000);
+    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+    if ((e = connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr))) < 0)
+    {
+        log_formated_error("Error connecting socket %d", e);
+        exit(EXIT_FAILURE);
+    }
+    log_info("Connected to the server");
+    return sockfd;
+}
+
+void close_tcp_socket(int sockfd) {
+    log_info("Closing the connection");
+    close(sockfd);
+}
+
+void send_txt_tcp(int sockfd, char* txt) {
+    log_formated_info("Text to be send : %s",txt);
+    send(sockfd,txt,strlen(txt),0);
 }

@@ -99,7 +99,7 @@ void tnfs_clean_data() {
 }
 
 void tnfs_test() {
-    Peer *p = calloc(1,sizeof(Peer));
+    /* Peer *p = calloc(1,sizeof(Peer));
     p->ip = "127.0.0.1";
     p->port = 5000;
     add_peer(p);
@@ -107,6 +107,10 @@ void tnfs_test() {
     get_peer("customid", pget);
     Peer* ptab[MAX_REDIS_KEYS];
     *ptab = calloc(MAX_REDIS_KEYS,sizeof(Peer));
-    get_all_peers(ptab);
+    get_all_peers(ptab); */
     //tcp_send_file(p,"caca");
+    int sockfd = open_tcp_socket();
+    send_txt_tcp(sockfd,"coucou");
+    close_tcp_socket(sockfd);
+    //send_comm_type();
 }
