@@ -20,6 +20,7 @@ typedef struct redisCli {
     redisContext* context;
 } redisClient;
 
+void keys_redis_command(KEY_TYPE type, char* result);
 void set_redis_command(KEY_TYPE type, char* key, char* value);
 void get_redis_command(KEY_TYPE type, char* key, char* result);
 void del_redis_command(KEY_TYPE type, char* key);

@@ -104,5 +104,6 @@ void tnfs_test() {
     p->port = 5000;
     add_peer(p);
     get_peer("customid");
+    get_all_peers();
     //tcp_send_file(p,"caca");
 }

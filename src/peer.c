@@ -48,3 +48,8 @@ Peer* get_peer(char *id) {
     p->port = atoi(port);
     return p;
 }
+
+void get_all_peers() {
+    char res[1000];
+    keys_redis_command(PEER,res);
+}
