@@ -8,7 +8,7 @@ typedef struct p {
 } Peer;
 
 void add_peer(Peer *p);
-Peer* get_peer(char *id);
-void get_all_peers();
+void get_peer(char *id, Peer *p);
+void get_all_peers(Peer* p[]);
 
 #endif

@@ -103,7 +103,10 @@ void tnfs_test() {
     p->ip = "127.0.0.1";
     p->port = 5000;
     add_peer(p);
-    get_peer("customid");
-    get_all_peers();
+    Peer *pget = calloc(1,sizeof(Peer));
+    get_peer("customid", pget);
+    Peer* ptab[MAX_REDIS_KEYS];
+    *ptab = calloc(MAX_REDIS_KEYS,sizeof(Peer));
+    get_all_peers(ptab);
     //tcp_send_file(p,"caca");
 }

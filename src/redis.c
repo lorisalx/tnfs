@@ -1,5 +1,6 @@
 #include "redis.h"
 #include "logger.h"
+#include "peer.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -25,21 +26,19 @@ void dispose()
     redisFree(client.context);
 }
 
-void keys_redis_command(KEY_TYPE type, char* resullt)
+void keys_redis_command(KEY_TYPE type, char* result[])
 {
     //log_formated_info( "New redis SET command called for tuple (%s, %s).", key, value);
     changeDatabase(type);
     redisReply *reply = redisCommand(client.context,"KEYS *");
-    int j =0;
+    int i =0;
     log_info("All keys/values ...");
-    while ( reply->element[j] != NULL)
+    while ( reply->element[i] != NULL)
     {
-            char result[100];
-            get_redis_command(type, reply->element[j]->str, result);
-            redisReply *rep = redisCommand(client.context,"GET  %s", reply->element[j]->str);
-            log_formated_info("KEY : %s | VALUE : %s",reply->element[j]->str,result);
-            j++;
-            freeReplyObject(rep);
+        char *id = malloc(MAX_REDIS_KEYS*sizeof(char));
+        strcpy(id,reply->element[i]->str);
+        result[i] = id;
+        i++;
     }
     log_info("All keys/values retrieved");
     freeReplyObject(reply);

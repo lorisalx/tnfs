@@ -2,6 +2,7 @@
 
 #ifndef REDIS_H
 #define REDIS_H
+#define MAX_REDIS_KEYS 30
 
 typedef enum { 
     BLOCK, 
@@ -20,7 +21,7 @@ typedef struct redisCli {
     redisContext* context;
 } redisClient;
 
-void keys_redis_command(KEY_TYPE type, char* result);
+void keys_redis_command(KEY_TYPE type, char* result[]);
 void set_redis_command(KEY_TYPE type, char* key, char* value);
 void get_redis_command(KEY_TYPE type, char* key, char* result);
 void del_redis_command(KEY_TYPE type, char* key);

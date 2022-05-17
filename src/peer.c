@@ -24,7 +24,7 @@ void add_peer(Peer *p) {
     free(fip);
 }
 
-Peer* get_peer(char *id) {
+void get_peer(char *id, Peer* p) {
     char fip[30];
     get_redis_command(PEER, id, fip);
 
@@ -42,14 +42,18 @@ Peer* get_peer(char *id) {
     log_formated_info("IP : %s",ip);
     log_formated_info("PORT : %s",port);
 
-    Peer *p = calloc(1,sizeof(Peer));
     p->id = id;
     p->ip = ip;
     p->port = atoi(port);
-    return p;
 }
 
-void get_all_peers() {
-    char res[1000];
+void get_all_peers(Peer* p[]) {
+    char* res[MAX_REDIS_KEYS] = {};
     keys_redis_command(PEER,res);
+    int i = 0;
+    while ( res[i] != NULL)
+    {
+        get_peer(res[i], p[i]);
+        i++;
+    }
 }
