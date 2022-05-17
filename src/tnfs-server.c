@@ -50,7 +50,7 @@ int main()
         exit(EXIT_FAILURE);
 	}
 	listen(tcpfd, 10);
-    log_formated_error("Connected on port %d",PORT);
+    log_formated_info("Connected on port %d",PORT);
 
 	/* Opening UDP socket */
     udpfd = socket(AF_INET, SOCK_DGRAM, 0);

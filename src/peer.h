@@ -7,4 +7,8 @@ typedef struct p {
     int port;
 } Peer;
 
+void add_peer(Peer *p);
+Peer* get_peer(char *id);
+Peer** get_all_peers();
+
 #endif
