@@ -23,11 +23,10 @@ void send_file(FILE *fp, int sockfd)
     }
 }
 
-void write_file(int sockfd)
+void write_file(int sockfd, char *filename)
 {
     int n;
     FILE *fp;
-    char *filename = "cacabis";
     char buffer[SIZE];
     log_info("Fichier en cours d'écriture");
     fp = fopen(filename, "w+");

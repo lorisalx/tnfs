@@ -85,7 +85,7 @@ int main()
 			connfd = accept(tcpfd, (struct sockaddr*)&cliaddr, &len);
 			if ((childpid = fork()) == 0) {
 				close(tcpfd);
-                write_file(connfd);
+                write_file(connfd,"filerecieve");
 				close(connfd);
 				exit(0);
 			}
