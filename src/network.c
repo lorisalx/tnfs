@@ -29,7 +29,7 @@ void write_file(int sockfd, char *filename)
     FILE *fp;
     char buffer[SIZE];
     log_info("Fichier en cours d'écriture");
-    fp = fopen(filename, "w+");
+    fp = fopen(filename, "wb");
     while (1)
     {
         n = recv(sockfd, buffer, SIZE, 0);
@@ -95,23 +95,34 @@ void tcp_send_file(Peer *p, char *filename)
 
 void look_for_block(char* cid) {
     // Pour chaque pair dans la table de routage
+    char buffer[512];
     Peer* ptab[MAX_REDIS_KEYS];
     *ptab = calloc(MAX_REDIS_KEYS,sizeof(Peer));
     get_all_peers(ptab);
     int i = 0;
-    while(ptab[i] != NULL) {
+    while(ptab[i] != NULL && i!=1) {
         // Voir si on a le fichier
+        int sockfd = open_tcp_socket(ptab[i]);
+        send_txt_tcp(sockfd,"LOOKING_FOR_FILE;cid");
+		recv(sockfd, buffer, sizeof(buffer), 0);
+        log_formated_info("Result : %s",buffer);
         int res = 1;
-        if(res == 1) {
+        if(strcmp(buffer,"BLOCK_FOUND") == 0) {
             log_formated_info("Block %s has been found", cid);
+            send_txt_tcp(sockfd,"READY_TO_RECIEVE");
+            write_file(sockfd,"test");
             break;
         }
+        else if(strcmp(buffer,"BLOCK_NOT_FOUND") == 0) {
+            log_info("Block not found on this peer");
+        }
+        close_tcp_socket(sockfd);
+        i++;
     }
 }
 
-int open_tcp_socket() {
+int open_tcp_socket(Peer *p) {
     struct sockaddr_in server_addr;
-
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0)
     {

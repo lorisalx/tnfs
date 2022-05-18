@@ -109,8 +109,6 @@ void tnfs_test() {
     *ptab = calloc(MAX_REDIS_KEYS,sizeof(Peer));
     get_all_peers(ptab); */
     //tcp_send_file(p,"caca");
-    int sockfd = open_tcp_socket();
-    send_txt_tcp(sockfd,"coucou");
-    close_tcp_socket(sockfd);
+    look_for_block("aze");
     //send_comm_type();
 }

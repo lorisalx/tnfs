@@ -24,8 +24,11 @@ int max(int x, int y)
 }
 int main()
 {
+	// Init redis
+    if(init_redis() == -1) 
+        return EXIT_FAILURE;
 	int tcpfd, connfd, udpfd, nready, maxfdp1;
-	char buffer[30];
+	char buffer[500];
 	pid_t childpid;
 	fd_set rset;
 	ssize_t n;
@@ -88,31 +91,43 @@ int main()
 			if ((childpid = fork()) == 0) {
 				close(tcpfd);
 				recv(connfd, buffer, sizeof(buffer), 0);
-				log_formated_info("Communication type : %s",buffer);
-				if (strcmp(buffer,"LOOKING_FOR_FILE") == 0) {
-					char blockname[500];
-					char res[500];
-					recv(connfd, blockname, MAXLINE, 0);
-					log_formated_info("Looking for block : %s",blockname);
-					get_redis_command(BLOCK,blockname,res);
+				char *commtype, *param;
+				char *search = ";";
+
+				commtype = strtok(buffer, search);
+				param = strtok(NULL, search);
+				log_formated_info("Communication type : %s",commtype);
+				if (strcmp(commtype,"LOOKING_FOR_FILE") == 0) {
+					char res[100];
+					log_formated_info("Looking for block : %s",param);
+					get_redis_command(BLOCK,"bGAYTCMRSGBTDOYRYGE4TIYTFGQYDEZTBMQ2WMOLCGZRWIMDBGM4TKOBYGJSDCMRSMVTDAZDGME3TCMTDGI2TGZJXHFSGGNLEGNSDQNDEHAYWKMZV",res);
+					log_formated_info("Res %s",res);
 					if(strcmp(res,"null") == 0) {
 						log_error("Block not found.");
+						send_txt_tcp(connfd,"BLOCK_NOT_FOUND");
 					}
 					else {
-						FILE *fp;
-						fp = fopen(res, "rb");
-						if (fp == NULL)
-						{
-							log_error("Error while reading file");
-							exit(EXIT_FAILURE);
+						send_txt_tcp(connfd,"BLOCK_FOUND");
+						char buffer2[500];
+						recv(connfd, buffer2, sizeof(buffer2), 0);
+						if(strcmp(buffer2,"READY_TO_RECIEVE") == 0) {
+							FILE *fp;
+							fp = fopen(strcat("blocks/",res), "rb");
+							if (fp == NULL)
+							{
+								log_error("Error while reading file");
+								exit(EXIT_FAILURE);
+							}
+							send_file(fp,connfd);
+							log_info("File data sent successfully");
 						}
-						send_file(fp,connfd);
-						log_info("File data sent successfully");
+
 					}
 				}
 				else if (strcmp(buffer,"RECIEVE_FILE") == 0) {
 					write_file(connfd,"filerecieve");
 				}
+				log_info("Closing comms ...");
 				close(connfd);
 				exit(0);
 			}
