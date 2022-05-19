@@ -15,6 +15,8 @@ void print_usage() {
     log_error("   - get <CID> : get a file from TNFS");
     log_error("   - infos <CID> : get infos about a CID");
     log_error("   - clean : clean local data");
+    log_error("   - peer add <IP>:<PORT>");
+    log_error("   - peer remove <IP>:<PORT>");
     exit(EXIT_FAILURE);
 }
 
@@ -28,7 +30,7 @@ int main(int argc, char *argv[])
     // Init redis
     if(init_redis() == -1) 
         return EXIT_FAILURE;
-    
+
 
     // Need minimum 2 arguments
     neededArgument(argc, 2);
@@ -46,9 +48,16 @@ int main(int argc, char *argv[])
         tnfs_get_infos(argv[2]);
     } else if (strcmp("clean", argv[1]) == 0) {
         tnfs_clean_data();
-        log_info("Data cleaned !");
-    } else if (strcmp("test", argv[1]) == 0) {
-        tnfs_test();
+    } else if (strcmp("peer", argv[1]) == 0) {
+        neededArgument(argc, 4);
+
+        if (strcmp("add", argv[2]) == 0) {
+            tnfs_addpeer(argv[3]);
+        } else if (strcmp("remove", argv[2]) == 0) {
+            tnfs_removepeer(argv[3]);
+        } else {
+            print_usage();
+        }
     } else {
         print_usage();
     }

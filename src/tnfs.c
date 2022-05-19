@@ -98,7 +98,7 @@ void tnfs_clean_data() {
     // To do : clean blocks folder
 }
 
-void tnfs_test() {
+void tnfs_addpeer(char* peer) {
     /* Peer *p = calloc(1,sizeof(Peer));
     p->ip = "127.0.0.1";
     p->port = 5000;
@@ -109,6 +109,10 @@ void tnfs_test() {
     *ptab = calloc(MAX_REDIS_KEYS,sizeof(Peer));
     get_all_peers(ptab); */
     //tcp_send_file(p,"caca");
-    look_for_block("bGAYTCMRSGBTDOYRYGE4TIYTFGQYDEZTBMQ2WMOLCGZRWIMDBGM4TKOBYGJSDCMRSMVTDAZDGME3TCMTDGI2TGZJXHFSGGNLEGNSDQNDEHAYWKMZV");
+    //look_for_block("bGAYTCMRSGBTDOYRYGE4TIYTFGQYDEZTBMQ2WMOLCGZRWIMDBGM4TKOBYGJSDCMRSMVTDAZDGME3TCMTDGI2TGZJXHFSGGNLEGNSDQNDEHAYWKMZV");
     //send_comm_type();
+}
+
+void tnfs_removepeer(char* peer) {
+
 }

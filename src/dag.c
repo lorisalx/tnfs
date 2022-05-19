@@ -133,8 +133,9 @@ void read_block(char* cid, DAGNode* node) {
     get_redis_command(BLOCK, cid, block_name);
 
     if(strcmp(block_name,"null") == 0) {
-        log_error("You don't have the block on your local storage.");
         look_for_block(cid);
+
+        // Vérification de si on a bien récupéré le block ou pas
         get_redis_command(BLOCK, cid, block_name);
         if(strcmp(block_name,"null") == 0) {
             log_error("Block not found on the network.");

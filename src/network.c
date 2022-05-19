@@ -7,7 +7,7 @@
 #include "logger.h"
 #include "peer.h"
 #include "redis.h"
-
+/*
 void send_file(FILE *fp, int sockfd)
 {
     char data[SIZE] = {0};
@@ -45,8 +45,8 @@ void write_file(int sockfd, char *filename)
     }
     return;
 }
-
-void tcp_send_file(Peer *p, char *filename)
+*/
+/*void tcp_send_file(Peer *p, char *filename)
 {
 
     char *ip = p->ip;
@@ -91,11 +91,42 @@ void tcp_send_file(Peer *p, char *filename)
 
     log_info("Closing the connection");
     close(sockfd);
-}
+}*/
 
 void look_for_block(char* cid) {
+    // Récupération de tout les peers
+    int results = 0;
+    Peer** array = get_all_peers(&results);
+    printf("On est là\n");
+    for(int i = 0; i < results; i++) {
+        // Filling server information 
+        struct sockaddr_in servaddr; 
+        memset(&servaddr, 0, sizeof(servaddr)); 
+        servaddr.sin_family = AF_INET; 
+        servaddr.sin_port = array[i]->port; 
+        servaddr.sin_addr.s_addr = inet_addr(array[i]->ip);
+
+        // Création d'un socket UDP
+        int socket_UDP = create_socket(UDP_CONNECTION, NULL);
+        printf("On envoi à : %s %d\n", array[i]->ip, array[i]->port);
+        char *hello = "Hello from client"; 
+        sendto(socket_UDP, (const char *)hello, strlen(hello), MSG_CONFIRM, (const struct sockaddr *) &servaddr,  sizeof(servaddr)); 
+        /*sendto(sockfd, (const char *)hello, strlen(hello), 
+        MSG_CONFIRM, (const struct sockaddr *) &servaddr,  
+            sizeof(servaddr)); */
+
+        close(socket_UDP);
+        // Ouverture connexion UDP 
+        // Envoie une demande
+        // Si oui :
+            // Ouverture en TCP
+            // Telechargement du fichier
+        // Si non :
+            // Envoie une demande de peer
+    }
+
     // Pour chaque pair dans la table de routage
-    char buffer[1];
+   /* char buffer[1];
     Peer* ptab[MAX_REDIS_KEYS];
     *ptab = calloc(MAX_REDIS_KEYS,sizeof(Peer));
     get_all_peers(ptab);
@@ -118,39 +149,41 @@ void look_for_block(char* cid) {
         }
         close_tcp_socket(sockfd);
         i++;
-    }
+    }*/
 }
 
-int open_tcp_socket(Peer *p) {
-    struct sockaddr_in server_addr;
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
-    {
-        log_error("Error creating socket");
-        exit(EXIT_FAILURE);
-    }
-    log_info("Server socket created successfully");
-    int e;
-    memset(&server_addr, 0, sizeof(server_addr));
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(5000);
-    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-
-    if ((e = connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr))) < 0)
-    {
-        log_formated_error("Error connecting socket %d", e);
-        exit(EXIT_FAILURE);
-    }
-    log_info("Connected to the server");
-    return sockfd;
-}
-
-void close_tcp_socket(int sockfd) {
-    log_info("Closing the connection");
-    close(sockfd);
-}
-
+/*
 void send_txt_tcp(int sockfd, char* txt) {
     log_formated_info("Text to be send : %s",txt);
     send(sockfd,txt,strlen(txt),0);
+}*/
+
+
+int create_socket(CONNECTION_TYPE type, struct sockaddr_in* servaddr) {
+    int sockfd;
+
+    if(type == UDP_CONNECTION) {
+        if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) { 
+            log_error("Error creating socket");
+            exit(EXIT_FAILURE); 
+        } 
+    } else if(type == TCP_CONNECTION) {
+        if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) { 
+            log_error("Error creating socket");
+            exit(EXIT_FAILURE); 
+        } 
+    }
+
+    if(type == TCP_CONNECTION) {
+        if (connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0) {
+            log_error("Error TCP connection");
+            exit(EXIT_FAILURE); 
+        }
+    }
+    return sockfd;
+}
+
+void close_socket(int sockfd) {
+    log_info("Closing the connection");
+    close(sockfd);
 }

@@ -26,22 +26,24 @@ void dispose()
     redisFree(client.context);
 }
 
-void keys_redis_command(KEY_TYPE type, char* result[])
+char** get_all_peers_command(int* resultAmount)
 {
-    //log_formated_info( "New redis SET command called for tuple (%s, %s).", key, value);
-    changeDatabase(type);
+    //log_formated_info( "New redis GET command called for all tuples.");
+    changeDatabase(PEER);
     redisReply *reply = redisCommand(client.context,"KEYS *");
-    int i =0;
-    log_info("All keys/values ...");
-    while ( reply->element[i] != NULL)
-    {
-        char *id = malloc(MAX_REDIS_KEYS*sizeof(char));
-        strcpy(id,reply->element[i]->str);
-        result[i] = id;
-        i++;
+
+    // Create response arrays
+    char **peerTab = calloc(reply->elements, sizeof(char *));
+    if(reply->elements != 0) {
+        for(int i = 0; i < reply->elements; i++) {
+            peerTab[i] = calloc(1, sizeof(char) * MAX_PEER_SIZE);
+            strcpy(peerTab[i], reply->element[i]->str);
+        }
     }
-    log_info("All keys/values retrieved");
+
+    *resultAmount = reply->elements;
     freeReplyObject(reply);
+    return peerTab;
 }
 
 void set_redis_command(KEY_TYPE type, char* key, char* value)
