@@ -28,7 +28,9 @@ int main()
     if(init_redis() == -1) 
         return EXIT_FAILURE;
 	int tcpfd, connfd, udpfd, nready, maxfdp1;
+	char commtype[2];
 	char buffer[500];
+	char cid[CID_LENGTH];
 	pid_t childpid;
 	fd_set rset;
 	ssize_t n;
@@ -90,41 +92,33 @@ int main()
 			connfd = accept(tcpfd, (struct sockaddr*)&cliaddr, &len);
 			if ((childpid = fork()) == 0) {
 				close(tcpfd);
-				recv(connfd, buffer, sizeof(buffer), 0);
-				char *commtype, *param;
-				char *search = ";";
+				recv(connfd, commtype, sizeof(commtype), 0);
 
-				commtype = strtok(buffer, search);
-				param = strtok(NULL, search);
 				log_formated_info("Communication type : %s",commtype);
-				if (strcmp(commtype,"LOOKING_FOR_FILE") == 0) {
+				if (strcmp(commtype,"00") == 0) {
 					char res[100];
-					log_formated_info("Looking for block : %s",param);
-					get_redis_command(BLOCK,"bGAYTCMRSGBTDOYRYGE4TIYTFGQYDEZTBMQ2WMOLCGZRWIMDBGM4TKOBYGJSDCMRSMVTDAZDGME3TCMTDGI2TGZJXHFSGGNLEGNSDQNDEHAYWKMZV",res);
+					recv(connfd, cid, sizeof(cid), 0);
+					log_formated_info("Looking for block : %s",cid);
+					get_redis_command(BLOCK,cid,res);
 					log_formated_info("Res %s",res);
 					if(strcmp(res,"null") == 0) {
 						log_error("Block not found.");
-						send_txt_tcp(connfd,"BLOCK_NOT_FOUND");
+						send_txt_tcp(connfd,"0");
 					}
 					else {
-						send_txt_tcp(connfd,"BLOCK_FOUND");
-						char buffer2[500];
-						recv(connfd, buffer2, sizeof(buffer2), 0);
-						if(strcmp(buffer2,"READY_TO_RECIEVE") == 0) {
-							FILE *fp;
-							fp = fopen(strcat("blocks/",res), "rb");
-							if (fp == NULL)
-							{
-								log_error("Error while reading file");
-								exit(EXIT_FAILURE);
-							}
-							send_file(fp,connfd);
-							log_info("File data sent successfully");
+						send_txt_tcp(connfd,"1");
+						FILE *fp;
+						fp = fopen("caca", "r+"); // File to open is res
+						if (fp == NULL)
+						{
+							log_error("Error while reading file");
+							exit(EXIT_FAILURE);
 						}
-
+						send_file(fp,connfd);
+						log_info("File data sent successfully");
 					}
 				}
-				else if (strcmp(buffer,"RECIEVE_FILE") == 0) {
+				else if (strcmp(commtype,"RECIEVE_FILE") == 0) {
 					write_file(connfd,"filerecieve");
 				}
 				log_info("Closing comms ...");
