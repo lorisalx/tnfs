@@ -14,13 +14,15 @@ size_t get_file_content(char* filename, char* output)
         log_error("An error occured while loading the file.");
         exit(EXIT_FAILURE);
     }
-    
+
     fseek(f, 0, SEEK_END);
     size_t fsize = ftell(f);
     fseek(f, 0, SEEK_SET);
 
     fread(output, fsize, 1, f);
     fclose(f);
+
+    output[fsize] = '\0';
 
     return fsize;
 }
@@ -36,6 +38,10 @@ void get_file_stats(char* filename, struct stat *buffer)
 
 void generate_cid_from_file(char* filename, char* cid) 
 {
+    printf("--- INPUT \n");
+    printf("- %s \n", filename);
+    printf("- %s \n", cid);
+
     // Get the file stats
     struct stat *buffer = malloc(sizeof(struct stat));
     get_file_stats(filename, buffer);
@@ -46,6 +52,9 @@ void generate_cid_from_file(char* filename, char* cid)
 
     // CID Generation
     generate_cid_from_file_content(output, output_length, cid);
+
+    printf("--- OUTPUT \n");
+    printf("- %s \n", cid);
 
     free(buffer);
     free(output);
@@ -61,15 +70,16 @@ void generate_cid_from_file_content(char* input, size_t input_length, char* cid)
 
     char* plain_hash = (char *)malloc(sizeof(char) * PLAIN_HASH_LENGTH);
     sprintf(plain_hash, "%s%s", hash_headers, hash_string);
-    //log_formated_debug("HashString: %s", hash_string);
-    //log_formated_debug("PlainHash: %s", plain_hash);
+    // log_formated_debug("HashString: %s", hash_string);
+    // log_formated_debug("PlainHash: %s", plain_hash);
 
-    char* encoded = (char *) malloc(sizeof(char) * ENCODED_HASH_LENGTH);
-    base32_encode((const unsigned char*)plain_hash, PLAIN_HASH_LENGTH, (unsigned char*)encoded);
-    //log_formated_debug("Encoded: %s", encoded);
-    encoded[113] = '\0';
+    char* encoded = (char *) malloc(ENCODED_HASH_LENGTH);
+    base32_encode((const unsigned char*) plain_hash, PLAIN_HASH_LENGTH, (unsigned char*)encoded);
+    encoded[112] = '\0';
+    // log_formated_debug("Encoded: %s", encoded);
+
     sprintf(cid, "b%s", encoded);
-    //log_formated_debug("Cid: %s", cid);
+    // log_formated_debug("Cid: %s", cid);
 
     free(encoded);
     free(hash);

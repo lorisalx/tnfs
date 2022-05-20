@@ -70,6 +70,7 @@ void tnfs_get_infos(char* cid) {
 
 void get_tnfs_file(char* cid) {
     DAGNode* node = calloc(1, sizeof(DAGNode));
+    
     read_block(cid, node);
 
     if(node->type != 2) {
@@ -89,6 +90,8 @@ void get_tnfs_file(char* cid) {
         free(currentBlock);
     }
 
+    log_info("File downloaded !");
+    
     fclose(output);
     free(node);
 }

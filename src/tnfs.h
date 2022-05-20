@@ -15,3 +15,4 @@ void tnfs_addpeer(char* peer); // Add peer
 void tnfs_removepeer(char* peer); // Remove peer
 
 #endif
+

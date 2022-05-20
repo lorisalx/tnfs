@@ -123,9 +123,12 @@ int get_number_of_blocks(size_t data_size) {
 }
 
 int verify_block(char* filename, char* cid) {
-    char* block_cid = (char*) calloc(1, sizeof(char) * CID_LENGTH);
+    char* block_cid = (char*) calloc(1, CID_LENGTH);
     generate_cid_from_file(filename, block_cid);
-    return (strcmp(block_cid,cid) == 0) ? 1 : -1;
+
+    int result = (strcmp(block_cid,cid) == 0) ? 1 : -1;
+    free(block_cid);
+    return result;
 }
 
 void read_block(char* cid, DAGNode* node) {  
@@ -137,6 +140,7 @@ void read_block(char* cid, DAGNode* node) {
 
         // Vérification de si on a bien récupéré le block ou pas
         get_redis_command(BLOCK, cid, block_name);
+
         if(strcmp(block_name,"null") == 0) {
             log_error("Block not found on the network.");
             exit(EXIT_FAILURE);
@@ -159,7 +163,6 @@ void read_block(char* cid, DAGNode* node) {
     if(verify_block(buf, cid) == -1) {
         // Le block correspond pas au CID, on le retire alors de REDIS et on supprime le fichier.
         // On relance ensuite le read_block afin de le télécharger
-
         del_redis_command(BLOCK, cid);
         remove(buf);
         read_block(cid, node);

@@ -1,6 +1,8 @@
 #include "logger.h"
 #include "tnfs.h"
 #include "redis.h"
+#include "dag.h"
+#include <limits.h>
 
 #include <string.h>
 #include <unistd.h>
@@ -42,7 +44,6 @@ int main(int argc, char *argv[])
     } else if (strcmp("get", argv[1]) == 0) {
         neededArgument(argc, 3);
         get_tnfs_file(argv[2]);
-        log_info("File downloaded !");
     } else if (strcmp("infos", argv[1]) == 0) {
         neededArgument(argc, 3);
         tnfs_get_infos(argv[2]);
