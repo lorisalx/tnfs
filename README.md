@@ -4,11 +4,9 @@ Loris ALEXANDRE | Sangoan BRIGUE | Hugo PAGNIEZ
 ## Hiredis Installation
 
 ```
-git clone https://github.com/redis/hiredis.git
-sudo apt-get install -y libhiredis-dev
-sudo mkdir /usr/local/include/hiredis
-cd hiredis/
-sudo mv -t /usr/local/include/hiredis hiredis.h alloc.h async.h read.h sds.h
+cd src/lib/hiredis
+make
+make install
 ```
 
 ## Build TNFS executables
