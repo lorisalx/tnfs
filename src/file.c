@@ -38,10 +38,6 @@ void get_file_stats(char* filename, struct stat *buffer)
 
 void generate_cid_from_file(char* filename, char* cid) 
 {
-    printf("--- INPUT \n");
-    printf("- %s \n", filename);
-    printf("- %s \n", cid);
-
     // Get the file stats
     struct stat *buffer = malloc(sizeof(struct stat));
     get_file_stats(filename, buffer);
@@ -52,9 +48,6 @@ void generate_cid_from_file(char* filename, char* cid)
 
     // CID Generation
     generate_cid_from_file_content(output, output_length, cid);
-
-    printf("--- OUTPUT \n");
-    printf("- %s \n", cid);
 
     free(buffer);
     free(output);

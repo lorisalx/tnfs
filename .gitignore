@@ -13,7 +13,5 @@
 
 # TNFS local storage
 exec/*
-bin
-hiredis
-!exec/tnfs
-!exec/tnfs-server
+src/bin
+src/lib/hiredis
