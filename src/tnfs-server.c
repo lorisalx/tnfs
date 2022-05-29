@@ -10,6 +10,7 @@
 #include "redis.h"
 #include "file.h"
 #include "dag.h"
+#include "peer.h"
 
 #define SIZE 1024
 #define MAX_CONNEXION 10
@@ -46,6 +47,33 @@ void send_file(char* filepath, int sockfd)
     }
 
     free(stats);
+}
+
+void send_peers(int sockfd) {
+    // Récupération de tout les peers
+    int results = 0;
+    char** array = get_all_peers_command(&results);
+
+    /* Send peers amount */
+    char buffer[SIZE];
+    bzero(buffer, SIZE);
+    sprintf(buffer, "%i", results);
+
+    if (send(sockfd, buffer, sizeof(buffer), 0) < 0){
+        printf("Can't send\n");
+        return -1;
+    }
+
+    /* Send all peers */
+    for(int i = 0; i < results; i++) {
+        bzero(buffer, SIZE);
+        sprintf(buffer, "%s", array[i]);
+
+        if (send(sockfd, buffer, sizeof(buffer), 0) < 0){
+            printf("Can't send\n");
+            return -1;
+        }
+    }
 }
 
 int main()
@@ -138,7 +166,7 @@ int main()
             if(strcmp(buffer,"BLOCK") == 0) {
                 send_file(file_path, clientSocket);
             } else if(strcmp(buffer,"PEERS") == 0) {
-                // Envoi des peers
+                send_peers(clientSocket);
             }
 
             close(clientSocket);

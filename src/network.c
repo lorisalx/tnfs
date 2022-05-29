@@ -48,6 +48,30 @@ void write_file(int sockfd, char *cid)
     close(receivedFile);
 }
 
+void receive_peers(int sockfd)
+{
+    // Récupération du nombre de peers
+    char buffer[SIZE];
+    bzero(buffer, SIZE);
+    if(recv(sockfd, buffer, SIZE, 0) < 0){
+        close_socket(sockfd);
+        exit(EXIT_FAILURE); 
+    }
+
+    int nb_peers = atoi(buffer);
+    for(int i = 0; i < nb_peers; i++) {
+        bzero(buffer, SIZE);
+
+        if(recv(sockfd, buffer, SIZE, 0) < 0){
+            close_socket(sockfd);
+            exit(EXIT_FAILURE); 
+        }
+
+        char value[] = "null";
+        set_redis_command(PEER, buffer, value);
+    }
+}
+
 void look_for_block(char* cid) {
 
     // Récupération de tout les peers
@@ -97,7 +121,7 @@ void look_for_block(char* cid) {
             close_socket(socket_TCP);
             break;
         } else {
-            printf("Il envoie les peers\n");
+            receive_peers(socket_TCP);
         }
 
         close_socket(socket_TCP);
